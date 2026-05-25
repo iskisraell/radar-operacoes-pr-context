@@ -728,23 +728,22 @@
     <section>
       <div class="head">
         <h2>Decisão de mapa</h2>
-        <p>O mapa do Radar saiu de Google Maps para Leaflet com renderização canvas e clustering por índice espacial.</p>
+        <p>O mapa precisava continuar fluido com muitos pontos. A troca foi só no Radar: Leaflet desenha o mapa, Supercluster agrupa os pontos.</p>
       </div>
       <div class="map-decision">
         <article class="card black">
-          <h3>Pacotes adicionados</h3>
-          <div class="package-row"><strong><code>leaflet</code></strong><span><code>^1.9.4</code> renderização de mapa open-source</span></div>
-          <div class="package-row"><strong><code>supercluster</code></strong><span><code>^8.0.1</code> clustering rápido por KD-tree</span></div>
-          <p>Em <code>RadarMap.vue</code>, o mapa usa <code>preferCanvas: true</code>, tiles CartoDB light/dark, layer groups, popup compartilhado e spiderfy para clusters pequenos.</p>
+          <h3>O que entrou</h3>
+          <div class="package-row"><strong><code>leaflet</code></strong><span><code>^1.9.4</code> mapa open-source, sem Google key</span></div>
+          <div class="package-row"><strong><code>supercluster</code></strong><span><code>^8.0.1</code> agrupamento rápido dos pontos</span></div>
+          <p><code>RadarMap.vue</code> usa <code>preferCanvas: true</code>, tiles CartoDB claro/escuro, popup único e spiderfy para abrir clusters pequenos.</p>
         </article>
         <article class="card">
-          <h3>Por que importa no review</h3>
+          <h3>O que revisar</h3>
           <ul class="mini-list">
-            <li>Remove dependência de API key e billing por map load no Radar.</li>
-            <li>Evita DOM marker por ponto; canvas reduz custo visual em volume alto.</li>
-            <li>Supercluster calcula clusters por viewport/zoom sem reconstrução pesada.</li>
-            <li>Os outros mapas do Operações continuam em Google Maps; a troca é isolada no Radar.</li>
-            <li>Trade-off: CartoDB vira dependência de tiles; fallback/self-host pode entrar depois.</li>
+            <li>Aceitar esses dois pacotes novos no <code>package.json</code>.</li>
+            <li>Confirmar que só o Radar muda; outros mapas do Operações continuam em Google Maps.</li>
+            <li>Testar zoom, pan, clusters, spiderfy, popup e modo escuro em homolog.</li>
+            <li>Validar acesso de rede a <code>cartocdn.com</code>. Se for bloqueado, trocar o provedor de tiles antes do deploy.</li>
           </ul>
         </article>
       </div>
@@ -815,7 +814,7 @@
       </details>
       <details>
         <summary>Por que Leaflet e Supercluster entraram?</summary>
-        <div class="details-body">O Google Maps ficava pesado para o volume do Radar porque cada marcador custava DOM e a clusterização anterior exigia contornos manuais. Leaflet com canvas e Supercluster deixa o mapa mais leve, sem API key e com controle de cluster por viewport. O ponto para review é aceitar a nova dependência e a dependência de tiles CartoDB.</div>
+        <div class="details-body">Para o mapa continuar responsivo com muitos pontos. Leaflet desenha com canvas, Supercluster agrupa por zoom/viewport e o Radar deixa de depender de Google Maps key. Antes do deploy, só precisa confirmar que homolog/produção conseguem carregar os tiles de <code>cartocdn.com</code>; se não conseguirem, troca-se a URL de tiles em <code>config/radar.php</code>.</div>
       </details>
       <details>
         <summary>O plano inicial foi seguido?</summary>
