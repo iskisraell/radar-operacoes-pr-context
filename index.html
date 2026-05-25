@@ -526,7 +526,7 @@
     <section>
       <div class="head">
         <h2>Implementação em imagens</h2>
-        <p>Esta grade usa a razão real de cada arquivo para manter proporção em desktop, tablet e mobile.</p>
+        <p>Registro visual direto das telas e fluxos que entram no PR.</p>
       </div>
       <div class="bento">
         <article class="media-card tall">
@@ -575,13 +575,15 @@
     <section>
       <div class="head">
         <h2>Principais diffs da branch</h2>
-        <p>Em vez de despejar o diff bruto, este mapa mostra o que mudou e por que importa.</p>
+        <p>Mapa curto dos arquivos que concentram a implementação e o risco de review.</p>
       </div>
       <div class="diff-grid">
-        <article class="diff-card"><h3>Backend Radar</h3><p>Controller, repository, resources, config e comandos artisan.</p><span class="tag purple">novo módulo</span></article>
-        <article class="diff-card"><h3>Frontend Radar</h3><p>Vue components, Vuex module, menu, Blade entrypoint e estilos.</p><span class="tag yellow">experiência</span></article>
-        <article class="diff-card"><h3>Permissões</h3><p>UserPolicy, migrations e seeder para analistas por concessão.</p><span class="tag green">governança</span></article>
-        <article class="diff-card"><h3>Validação</h3><p>Teste feature Radar e evidência de cache, rotas e perfis.</p><span class="tag blue">prova</span></article>
+        <article class="diff-card"><h3>Entrada e rotas</h3><p><code>routes/web.php</code>, <code>RadarController.php</code>, <code>resources/views/radar/index.blade.php</code> e menu Blade/JS colocam o Radar em <code>/radar</code>.</p><span class="tag purple">módulo nativo</span></article>
+        <article class="diff-card"><h3>Dados e escopo</h3><p><code>RadarRepository.php</code>, <code>config/radar.php</code>, <code>Place.php</code> e <code>User.php</code> aplicam concessão, praça, estabelecimento e filtros.</p><span class="tag green">fronteira</span></article>
+        <article class="diff-card"><h3>Contratos de API</h3><p><code>RadarCardResource.php</code>, <code>RadarDashboardResource.php</code>, <code>RadarMapPointResource.php</code> e recursos de filtro/detalhe separam cards, mapa e dashboard.</p><span class="tag blue">payloads</span></article>
+        <article class="diff-card"><h3>Interface Vue</h3><p><code>RadarApp.vue</code>, <code>RadarEquipment.vue</code>, <code>RadarDashboard.vue</code>, <code>RadarMap.vue</code>, charts GChart e Vuex entregam lista, dashboard, mapa e detalhe.</p><span class="tag yellow">experiência</span></article>
+        <article class="diff-card"><h3>Permissões</h3><p><code>UserPolicy.php</code>, migrations de perfil e <code>ProfilePermissionSeeder.php</code> liberam analistas de concessão e bloqueiam não analistas.</p><span class="tag green">acesso</span></article>
+        <article class="diff-card"><h3>Operação e build</h3><p>Comandos <code>RadarCache*</code>, assets em <code>public/*</code>, <code>package*.json</code> e teste <code>RadarScopeBoundaryTest.php</code> cobrem cache, bundle e regressão.</p><span class="tag black">deploy</span></article>
       </div>
     </section>
 
@@ -616,12 +618,12 @@
 
     <section>
       <div class="head">
-        <h2>Conflitos com main: como resolver sem dívida</h2>
-        <p>Dry merge contra o <code>main</code> atual mostrou uma superfície pequena de conflito direto, mas os bundles precisam de disciplina.</p>
+        <h2>Conflitos com main: resolvido</h2>
+        <p>A branch já foi sincronizada com <code>main</code>, os conflitos foram fechados e os bundles foram regenerados a partir da árvore mergeada.</p>
       </div>
       <div class="grid">
-        <article class="card span-5 orange">
-          <h3>Conflitos diretos</h3>
+        <article class="card span-5 green">
+          <h3>Arquivos que conflitaram</h3>
           <ul class="list">
             <li><code>.gitignore</code></li>
             <li><code>public/css/app.css</code></li>
@@ -630,12 +632,12 @@
           </ul>
         </article>
         <article class="card span-7">
-          <h3>Resolução recomendada</h3>
-          <p>Em <code>.gitignore</code>, manter <code>/.claude</code>, <code>/AGENTS.md</code> e <code>/docs</code>. Para bundles, não escolher manualmente um lado: resolver o merge dos fontes, rodar build se o deploy exigir, e commitar os arquivos gerados como decisão explícita.</p>
+          <h3>Resolução aplicada</h3>
+          <p>Merge commit <code>9d2595c76</code>: manteve <code>/.claude</code>, <code>/AGENTS.md</code> e <code>/docs</code> no <code>.gitignore</code>. Os assets em <code>public/*</code> não foram editados à mão; saíram de <code>./sail npm run production</code>.</p>
         </article>
         <article class="card full black">
-          <h3>Por que isso é melhor</h3>
-          <p>Editar bundle gerado em conflito cria dívida e risco invisível. A fonte de verdade é o código em <code>resources/</code>; o bundle deve nascer de build limpo depois do sync.</p>
+          <h3>Estado atual do PR</h3>
+          <p>PR <code>#876</code> segue aberto e mergeable. Head remoto atual: <code>d88b68ecb</code>. Após o merge, entraram os fixes <code>da9eb81db</code> (compatibilidade PHP 7), <code>54dfdbbe7</code> (recursão em chart data), <code>bdf30fb52</code> (assets de produção) e remoções finais de docs locais fora do PR.</p>
         </article>
       </div>
     </section>
