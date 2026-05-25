@@ -582,7 +582,7 @@
         <article class="diff-card"><h3>Dados e escopo</h3><p><code>RadarRepository.php</code>, <code>config/radar.php</code>, <code>Place.php</code> e <code>User.php</code> aplicam concessão, praça, estabelecimento e filtros.</p><span class="tag green">fronteira</span></article>
         <article class="diff-card"><h3>Contratos de API</h3><p><code>RadarCardResource.php</code>, <code>RadarDashboardResource.php</code>, <code>RadarMapPointResource.php</code> e recursos de filtro/detalhe separam cards, mapa e dashboard.</p><span class="tag blue">payloads</span></article>
         <article class="diff-card"><h3>Interface Vue</h3><p><code>RadarApp.vue</code>, <code>RadarEquipment.vue</code>, <code>RadarDashboard.vue</code>, <code>RadarMap.vue</code>, charts GChart e Vuex entregam lista, dashboard, mapa e detalhe.</p><span class="tag yellow">experiência</span></article>
-        <article class="diff-card"><h3>Permissões</h3><p><code>UserPolicy.php</code>, migrations de perfil e <code>ProfilePermissionSeeder.php</code> liberam analistas de concessão e bloqueiam não analistas.</p><span class="tag green">acesso</span></article>
+        <article class="diff-card"><h3>Permissões</h3><p><code>UserPolicy.php</code>, migrations de perfil e <code>ProfilePermissionSeeder.php</code> deixam o Radar disponível apenas para devs e perfis analistas.</p><span class="tag green">acesso</span></article>
         <article class="diff-card"><h3>Operação e build</h3><p>Comandos <code>RadarCache*</code>, assets em <code>public/*</code>, <code>package*.json</code> e teste <code>RadarScopeBoundaryTest.php</code> cobrem cache, bundle e regressão.</p><span class="tag black">deploy</span></article>
       </div>
     </section>
@@ -608,10 +608,14 @@
       <div class="grid">
         <article class="card span-4 purple"><div class="metric">119</div><h3>testes</h3><p><code>./sail php vendor/bin/phpunit tests/Feature/Radar/</code> passou com 5604 asserções.</p></article>
         <article class="card span-4 black"><div class="metric">10</div><h3>rotas</h3><p><code>./sail artisan route:list --path=radar</code> lista 10 rotas autenticadas.</p></article>
-        <article class="card span-4 yellow"><div class="metric">3</div><h3>concessões</h3><p>SP, PR e BA passaram por clear, warm e health.</p></article>
+        <article class="card span-4 yellow"><div class="metric">20</div><h3>praças</h3><p>Radar está configurado para SP, RJ, PR, RS, MG, BA, CP, GO, SO, SC, ST, PB, MA, AM, AL, PI, BE, CE, PE e DF. Clear/warm/health foi validado em SP, PR e BA.</p></article>
         <article class="card full">
           <h3>Nota de cache</h3>
           <p>A evidência local ainda indica <code>CACHE_DRIVER=file</code>. Redis existe em config/Docker, mas o deploy precisa confirmar o backend real em homolog/produção, principalmente se houver mais de um app server.</p>
+        </article>
+        <article class="card full">
+          <h3>Concessões configuradas</h3>
+          <p><code>sp</code> São Paulo/SP, <code>rj</code> Rio de Janeiro/RJ, <code>curitiba</code> Curitiba/PR, <code>pr</code> Curitiba/PR, <code>rs</code> Porto Alegre/RS, <code>mg</code> Belo Horizonte/MG, <code>ba</code> Salvador/BA, <code>cp</code> Campinas/CP, <code>go</code> Goiânia/GO, <code>so</code> Sorocaba/SO, <code>sc</code> Florianópolis/SC, <code>st</code> Santos/ST, <code>pb</code> João Pessoa/PB, <code>ma</code> São Luís/MA, <code>am</code> Manaus/AM, <code>al</code> Maceió/AL, <code>pi</code> Teresina/PI, <code>be</code> Belém/BE, <code>ce</code> Fortaleza/CE, <code>pe</code> Recife/PE e <code>df</code> Brasília/DF.</p>
         </article>
       </div>
     </section>
@@ -661,7 +665,7 @@
       </details>
       <details>
         <summary>O que falta antes de deployar?</summary>
-        <div class="details-body">Validar tokens reais dos analistas por concessão, confirmar o backend de cache em homolog/produção e decidir se bundles finais precisam ser versionados.</div>
+        <div class="details-body">Validar tokens reais dos analistas por concessão e confirmar o backend de cache em homolog/produção. Acesso atual: somente devs e perfis analistas.</div>
       </details>
     </section>
 
