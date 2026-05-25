@@ -168,12 +168,18 @@
     .orange { background: var(--orange); color: var(--black); }
     .yellow { background: var(--yellow); color: var(--black); }
     .purple { background: var(--purple); color: var(--white); }
+    .green { background: var(--green); color: var(--white); }
+    .blue { background: var(--blue); color: var(--white); }
     .white { background: var(--white); }
 
     .black p,
     .purple p,
+    .green p,
+    .blue p,
     .black li,
-    .purple li { color: rgba(255,255,255,.76); }
+    .purple li,
+    .green li,
+    .blue li { color: rgba(255,255,255,.76); }
 
     .orange p,
     .yellow p { color: rgba(0,0,0,.72); }
@@ -418,6 +424,78 @@
       align-content: space-between;
     }
 
+    .review-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .review-tab {
+      appearance: none;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--white);
+      color: var(--black);
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 9px 13px;
+    }
+
+    .review-tab[aria-selected="true"] {
+      background: var(--black);
+      color: var(--white);
+      border-color: var(--black);
+    }
+
+    .review-panel { display: none; }
+    .review-panel.is-active { display: grid; gap: 14px; }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .compare-card {
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--white);
+      padding: 16px;
+      min-height: 190px;
+    }
+
+    .compare-card h3 { font-size: 18px; }
+
+    .mini-list {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .mini-list li { margin: 6px 0; }
+
+    .map-decision {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 14px;
+    }
+
+    .package-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+
+    .package-row:last-child { border-bottom: 0; }
+
+    .package-row strong,
+    .package-row span { min-width: 0; }
+
     footer {
       margin-top: 26px;
       border-radius: var(--radius);
@@ -449,7 +527,9 @@
       .half,
       .tall { grid-column: 1 / -1; }
       .storyline,
-      .diff-grid { grid-template-columns: 1fr; }
+      .diff-grid,
+      .compare-grid,
+      .map-decision { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 620px) {
@@ -521,6 +601,51 @@
           <div class="story-step"><div><b>5. Evidência</b><span>Testes, rotas, perfis, cache e checklist manual.</span></div><span class="tag green">deploy review</span></div>
         </div>
       </article>
+    </section>
+
+    <section>
+      <div class="head">
+        <h2>Do plano inicial ao PR</h2>
+        <p>Use os botões para comparar o Radar original, o plano de migração e o que virou a implementação no Operações.</p>
+      </div>
+      <div class="review-tabs" role="tablist" aria-label="Comparativo da evolução do Radar">
+        <button class="review-tab" type="button" role="tab" aria-selected="true" aria-controls="panel-before" data-panel="panel-before">Como era</button>
+        <button class="review-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-plan" data-panel="panel-plan">Plano inicial</button>
+        <button class="review-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-built" data-panel="panel-built">O que virou</button>
+        <button class="review-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-next" data-panel="panel-next">Próximos passos</button>
+      </div>
+      <div id="panel-before" class="review-panel is-active" role="tabpanel">
+        <div class="compare-grid">
+          <article class="compare-card"><h3>Stack separado</h3><p>React 19, TypeScript, Vite e Tailwind em uma aplicação fora do Operações.</p><span class="tag purple">standalone</span></article>
+          <article class="compare-card"><h3>Auth própria</h3><p>Senha client-side e fluxo separado da sessão real do Operações.</p><span class="tag red">risco</span></article>
+          <article class="compare-card"><h3>Dados externos</h3><p>Google Apps Script, Google Sheets e cache IndexedDB no navegador.</p><span class="tag yellow">frágil</span></article>
+          <article class="compare-card"><h3>Deploy paralelo</h3><p>Vercel/proxy/servidor separado significavam mais uma superfície para operar.</p><span class="tag black">custo</span></article>
+        </div>
+      </div>
+      <div id="panel-plan" class="review-panel" role="tabpanel">
+        <div class="compare-grid">
+          <article class="compare-card"><h3>API-first</h3><p>O plano de 22/04 previa SPA React em domínio próprio, proxy Laravel e APIs do Operações.</p><span class="tag blue">4-5 semanas</span></article>
+          <article class="compare-card"><h3>Proxy/cache</h3><p>Laravel separado faria login, token management, adapter de dados e cache server-side.</p><span class="tag purple">camada extra</span></article>
+          <article class="compare-card"><h3>Endpoints novos</h3><p>Equipamentos, detalhe, busca e dashboard seriam expostos por API para o Radar consumir.</p><span class="tag green">contrato</span></article>
+          <article class="compare-card"><h3>Problema mantido</h3><p>Mesmo melhor que GAS/Sheets, ainda existiam dois sistemas, dois deploys e auth duplicada.</p><span class="tag red">superseded</span></article>
+        </div>
+      </div>
+      <div id="panel-built" class="review-panel" role="tabpanel">
+        <div class="compare-grid">
+          <article class="compare-card"><h3>Módulo nativo</h3><p><code>/radar</code> roda dentro do Operações com Laravel 8, Blade, Vue 3, Vuex e AdminLTE.</p><span class="tag green">entregue</span></article>
+          <article class="compare-card"><h3>Mesma sessão</h3><p>Sem login próprio, sem token proxy e com acesso controlado por policy/perfil.</p><span class="tag green">governança</span></article>
+          <article class="compare-card"><h3>Contratos leves</h3><p>Lista, mapa, dashboard, detalhe e filtros têm resources separados e orçamento de carga.</p><span class="tag blue">escala</span></article>
+          <article class="compare-card"><h3>Operável</h3><p>Cache por concessão, comandos clear/warm/health, testes e bundles versionados para o PR.</p><span class="tag black">deploy</span></article>
+        </div>
+      </div>
+      <div id="panel-next" class="review-panel" role="tabpanel">
+        <div class="compare-grid">
+          <article class="compare-card"><h3>Deploy</h3><p>Validar tokens reais dos analistas, cache em homolog/produção e publicação dos bundles finais.</p><span class="tag yellow">imediato</span></article>
+          <article class="compare-card"><h3>Dependências</h3><p>Confirmar Leaflet + Supercluster com liderança técnica e limpar dependências de mapa não usadas no Radar.</p><span class="tag purple">review</span></article>
+          <article class="compare-card"><h3>Dados</h3><p>Expandir validação por praça, medir endpoints em carga real e ajustar TTLs por uso.</p><span class="tag blue">observabilidade</span></article>
+          <article class="compare-card"><h3>Features</h3><p>Depois do rollout: filtros salvos, exportações, ações operacionais guiadas e integrações de manutenção.</p><span class="tag green">pós-MVP</span></article>
+        </div>
+      </div>
     </section>
 
     <section>
@@ -602,6 +727,31 @@
 
     <section>
       <div class="head">
+        <h2>Decisão de mapa</h2>
+        <p>O mapa do Radar saiu de Google Maps para Leaflet com renderização canvas e clustering por índice espacial.</p>
+      </div>
+      <div class="map-decision">
+        <article class="card black">
+          <h3>Pacotes adicionados</h3>
+          <div class="package-row"><strong><code>leaflet</code></strong><span><code>^1.9.4</code> renderização de mapa open-source</span></div>
+          <div class="package-row"><strong><code>supercluster</code></strong><span><code>^8.0.1</code> clustering rápido por KD-tree</span></div>
+          <p>Em <code>RadarMap.vue</code>, o mapa usa <code>preferCanvas: true</code>, tiles CartoDB light/dark, layer groups, popup compartilhado e spiderfy para clusters pequenos.</p>
+        </article>
+        <article class="card">
+          <h3>Por que importa no review</h3>
+          <ul class="mini-list">
+            <li>Remove dependência de API key e billing por map load no Radar.</li>
+            <li>Evita DOM marker por ponto; canvas reduz custo visual em volume alto.</li>
+            <li>Supercluster calcula clusters por viewport/zoom sem reconstrução pesada.</li>
+            <li>Os outros mapas do Operações continuam em Google Maps; a troca é isolada no Radar.</li>
+            <li>Trade-off: CartoDB vira dependência de tiles; fallback/self-host pode entrar depois.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="head">
         <h2>Validação e deploy</h2>
         <p>O que já foi provado e o que ainda precisa de ambiente real.</p>
       </div>
@@ -664,6 +814,14 @@
         <div class="details-body">Mapa, lista, detalhe, dashboard e opções de filtro têm necessidades diferentes. Um resource único deixaria payload pesado e acoplado.</div>
       </details>
       <details>
+        <summary>Por que Leaflet e Supercluster entraram?</summary>
+        <div class="details-body">O Google Maps ficava pesado para o volume do Radar porque cada marcador custava DOM e a clusterização anterior exigia contornos manuais. Leaflet com canvas e Supercluster deixa o mapa mais leve, sem API key e com controle de cluster por viewport. O ponto para review é aceitar a nova dependência e a dependência de tiles CartoDB.</div>
+      </details>
+      <details>
+        <summary>O plano inicial foi seguido?</summary>
+        <div class="details-body">Foi seguido como diagnóstico, não como arquitetura final. O plano API-first de abril foi substituído pela decisão de maio: Radar nativo dentro do Operações, sem React separado, sem proxy próprio, sem login duplicado e sem Google Apps Script como backend.</div>
+      </details>
+      <details>
         <summary>O que falta antes de deployar?</summary>
         <div class="details-body">Validar tokens reais dos analistas por concessão e confirmar o backend de cache em homolog/produção. Acesso atual: somente devs e perfis analistas.</div>
       </details>
@@ -671,8 +829,21 @@
 
     <footer>
       <strong>Radar Operações MVP</strong>
-      <p>Documento de implementação para anexar ao PR. Base: histórico da branch, evidência local, dry merge contra main atual, mídias adicionadas em <code>docs/pr-media</code>, Obsidian e código-fonte do Radar.</p>
+      <p>Documento de implementação para anexar ao PR. Base: histórico da branch, evidência local, merge resolvido com <code>main</code>, mídias adicionadas em <code>docs/pr-media</code>, Obsidian e código-fonte do Radar.</p>
     </footer>
   </main>
+  <script>
+    document.querySelectorAll('.review-tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var target = tab.getAttribute('data-panel');
+        document.querySelectorAll('.review-tab').forEach(function (item) {
+          item.setAttribute('aria-selected', item === tab ? 'true' : 'false');
+        });
+        document.querySelectorAll('.review-panel').forEach(function (panel) {
+          panel.classList.toggle('is-active', panel.id === target);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
