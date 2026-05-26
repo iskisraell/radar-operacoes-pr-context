@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PR 876 | Revisao William</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #FF4F00;
+      --purple: #4E18FF;
+      --yellow: #FECC14;
+      --green: #3D7700;
+      --black: #000;
+      --white: #fff;
+      --surface: #FAFAFA;
+      --muted: #F4F4F4;
+      --line: #E5E5E5;
+      --text: #595959;
+      --danger: #D92D20;
+      --blue: #2563EB;
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--surface);
+      color: var(--black);
+      font-family: "Rethink Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.42;
+    }
+
+    main {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    .hero {
+      min-height: 430px;
+      border-radius: var(--radius);
+      padding: clamp(24px, 4vw, 44px);
+      background: var(--black);
+      color: var(--white);
+      display: grid;
+      align-content: space-between;
+      gap: 44px;
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background:
+        linear-gradient(120deg, rgba(78,24,255,.88), rgba(0,0,0,.2) 48%, rgba(255,79,0,.9)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 1px, transparent 1px 58px);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      bottom: -110px;
+      z-index: -1;
+      width: min(58vw, 560px);
+      aspect-ratio: 1;
+      border-radius: 36px;
+      background:
+        linear-gradient(135deg, var(--yellow) 0 30%, transparent 30% 42%, var(--orange) 42% 66%, transparent 66% 74%, var(--white) 74%),
+        linear-gradient(45deg, rgba(255,255,255,.15), transparent);
+      transform: rotate(-8deg);
+      opacity: .92;
+    }
+
+    h1 {
+      max-width: 850px;
+      margin: 34px 0 14px;
+      font-size: clamp(42px, 7vw, 82px);
+      line-height: .95;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 21px;
+      line-height: 1.12;
+    }
+
+    p { margin: 0 0 10px; color: var(--text); }
+    p:last-child { margin-bottom: 0; }
+
+    .lead {
+      max-width: 760px;
+      color: rgba(255,255,255,.88);
+      font-size: clamp(18px, 2.2vw, 23px);
+    }
+
+    .eyebrow,
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 28px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: var(--orange);
+      color: var(--black);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .hero-meta,
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill.white { background: var(--white); color: var(--black); }
+    .pill.black { background: var(--black); color: var(--white); }
+    .pill.purple { background: rgba(78,24,255,.12); color: var(--purple); }
+    .pill.green { background: rgba(61,119,0,.14); color: var(--green); }
+    .pill.yellow { background: var(--yellow); color: var(--black); }
+    .pill.red { background: rgba(217,45,32,.12); color: var(--danger); }
+    .pill.blue { background: rgba(37,99,235,.12); color: var(--blue); }
+
+    section { margin-top: 24px; display: grid; gap: 14px; }
+
+    .head {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: end;
+    }
+
+    .head p { max-width: 560px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      grid-column: span 4;
+      min-width: 0;
+      border-radius: var(--radius);
+      background: var(--muted);
+      padding: 22px;
+    }
+
+    .full { grid-column: 1 / -1; }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+
+    .black { background: var(--black); color: var(--white); }
+    .orange { background: var(--orange); color: var(--black); }
+    .yellow { background: var(--yellow); color: var(--black); }
+    .purple { background: var(--purple); color: var(--white); }
+    .green { background: var(--green); color: var(--white); }
+    .blue { background: var(--blue); color: var(--white); }
+    .white { background: var(--white); border: 1px solid var(--line); }
+
+    .black p,
+    .purple p,
+    .green p,
+    .blue p { color: rgba(255,255,255,.78); }
+
+    .orange p,
+    .yellow p { color: rgba(0,0,0,.72); }
+
+    .score {
+      font-size: clamp(54px, 9vw, 104px);
+      line-height: .85;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .mini {
+      color: inherit;
+      opacity: .72;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .event {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      gap: 14px;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+    }
+
+    .event:first-child { border-top: 0; padding-top: 0; }
+
+    .event strong { display: block; margin-bottom: 5px; }
+
+    details {
+      border-radius: var(--radius);
+      background: var(--white);
+      border: 1px solid var(--line);
+      padding: 0;
+      overflow: hidden;
+    }
+
+    summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      font-weight: 800;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: "+";
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--black);
+      color: var(--white);
+      flex: 0 0 auto;
+    }
+
+    details[open] summary::after { content: "-"; }
+
+    .detail-body {
+      padding: 0 20px 20px;
+      color: var(--text);
+    }
+
+    .commit {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--muted);
+      color: var(--black);
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .comment-box {
+      white-space: pre-wrap;
+      background: var(--black);
+      color: var(--white);
+      border-radius: var(--radius);
+      padding: 22px;
+      font-size: 15px;
+    }
+
+    .comment-box a { color: var(--yellow); }
+
+    .copy-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      background: var(--orange);
+      color: var(--black);
+      font: inherit;
+      font-weight: 800;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+
+    button:focus-visible,
+    summary:focus-visible {
+      outline: 3px solid var(--yellow);
+      outline-offset: 3px;
+    }
+
+    .footer {
+      margin-top: 24px;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    @media (max-width: 820px) {
+      main { width: min(100% - 20px, 1160px); padding-top: 10px; }
+      .hero { min-height: 520px; }
+      .head { display: grid; align-items: start; }
+      .card,
+      .span-3,
+      .span-4,
+      .span-5,
+      .span-6,
+      .span-7,
+      .span-8 { grid-column: 1 / -1; }
+      .event { grid-template-columns: 1fr; gap: 6px; }
+      summary { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero" aria-label="Resumo da revisao">
+      <div>
+        <span class="eyebrow">PR 876 - Radar Operacoes</span>
+        <h1>O review separou risco real de alarme falso.</h1>
+        <p class="lead">William encontrou pontos criticos de arquitetura, escopo, performance e limpeza de frontend. A parte Vue 2 vs Vue 3 estava equivocada, mas serviu para endurecer o cleanup onde fazia sentido.</p>
+      </div>
+      <div class="hero-meta">
+        <span class="pill white">24 comentarios</span>
+        <span class="pill white">20 aceitos/corrigidos</span>
+        <span class="pill white">4 respondidos com evidência</span>
+        <span class="pill white">1 atenção de precisão</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="head">
+        <h2>Leitura executiva</h2>
+        <p>O PR saiu de um MVP funcional para um pacote mais defensável: menos acoplamento, escopo vivo por perfil, menos risco de memória e respostas com commit por comentário.</p>
+      </div>
+      <div class="grid">
+        <article class="card green span-3">
+          <div class="score">24</div>
+          <p class="mini">threads respondidas</p>
+        </article>
+        <article class="card purple span-3">
+          <div class="score">9</div>
+          <p class="mini">commits pos-review</p>
+        </article>
+        <article class="card orange span-3">
+          <div class="score">123</div>
+          <p class="mini">testes Radar verdes</p>
+        </article>
+        <article class="card black span-3">
+          <div class="score">0</div>
+          <p class="mini">bloqueio tecnico conhecido</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="head">
+        <h2>O que William pegou certo</h2>
+        <p>Os pontos abaixo eram substanciais e foram tratados como correcao, nao como debate.</p>
+      </div>
+      <div class="grid">
+        <article class="card span-4">
+          <span class="pill red">critico</span>
+          <h3>Scope e permissao estavam fragilizados.</h3>
+          <p>Hardcode de estabelecimentos, migrations para permissao e cache via Request no Model criavam risco operacional.</p>
+          <div class="commit">79c386432 - align permissions with profile scope</div>
+        </article>
+        <article class="card span-4">
+          <span class="pill red">critico</span>
+          <h3>Mapa podia pesar memoria.</h3>
+          <p>O review apontou `get()` + filtro em PHP em carga alta. A resposta moveu filtro de coordenada para SQL e usou rows crus.</p>
+          <div class="commit">76bf94f54 - bound map query memory usage</div>
+        </article>
+        <article class="card span-4">
+          <span class="pill red">critico</span>
+          <h3>Camadas estavam misturadas.</h3>
+          <p>Repository fazia papel de HTTP. Agora Controller resolve Resources, repository devolve dados e middleware mede requests lentas.</p>
+          <div class="commit">7b1ef8d38 - keep http concerns in controller</div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="head">
+        <h2>O drama Vue 2 vs Vue 3</h2>
+        <p>Esse foi o ponto mais sensivel: a preocupacao com cleanup era boa; a premissa da versao estava errada.</p>
+      </div>
+      <div class="grid">
+        <article class="card purple span-7">
+          <h3>Por que o comentario estava equivocado</h3>
+          <p>O projeto usa Vue 3: `package.json` traz `vue ^3.2.36`, `vuex ^4.1.0`, `vue-loader ^17.0.1`, e o bootstrap usa `createApp`. Portanto `beforeUnmount`, `mounted` e `unmounted` sao APIs corretas aqui.</p>
+        </article>
+        <article class="card yellow span-5">
+          <h3>Por que ainda virou fix</h3>
+          <p>A versao estava certa no codigo, mas William levantou riscos reais de cleanup. O patch fortaleceu overflow, timers, observers, CancelToken, sequence guard e listeners delegados.</p>
+          <div class="commit">906ba7945 - harden frontend request cleanup</div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="head">
+        <h2>Linha do tempo das decisões</h2>
+        <p>Fluxo de resposta usado: aceitar quando havia risco real, provar quando a premissa estava errada, e ainda endurecer o código quando a preocupação fazia sentido.</p>
+      </div>
+      <div class="card white full">
+        <div class="timeline">
+          <div class="event">
+            <strong>17:36 UTC</strong>
+            <p>William solicita mudanças em 24 pontos. O maior bloco: permissão/escopo, cache, mapa, resources e cleanup frontend.</p>
+          </div>
+          <div class="event">
+            <strong>21:34</strong>
+            <p>Frontend fica mais defensivo: dashboard com CancelToken, mapa fora da reatividade, popup com listener delegado, timers e observers limpos.</p>
+          </div>
+          <div class="event">
+            <strong>21:47</strong>
+            <p>Scope muda de config hardcoded para filtros vivos de perfil/usuario. Migrations de permissao saem do PR.</p>
+          </div>
+          <div class="event">
+            <strong>22:04-22:26</strong>
+            <p>Commands ganham documentacao de topologia; controller/repository se separam; mapa reduz risco de memoria.</p>
+          </div>
+          <div class="event">
+            <strong>22:50-23:21</strong>
+            <p>Duplicacoes em Resources viram accessors no Place; UI recebe polimentos de dark mode, breadcrumb, `@can` e fallback de config.</p>
+          </div>
+          <div class="event">
+            <strong>00:09-00:28</strong>
+            <p>As 24 respostas sao publicadas no PR, cada uma com decisao, commit e arquivo alterado.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="head">
+        <h2>Por commit</h2>
+        <p>Mapa direto entre decisao e alteracao para facilitar review.</p>
+      </div>
+      <details open>
+        <summary>906ba7945 - frontend request cleanup</summary>
+        <div class="detail-body">Corrige riscos levantados nos comentarios 17-22: cleanup de overflow, timers, observers, Leaflet fora do `data()`, listener delegado no popup, CancelToken no dashboard e guard para append stale.</div>
+      </details>
+      <details>
+        <summary>79c386432 - permissions with profile scope</summary>
+        <div class="detail-body">Remove cache em Request no Model, tira repository da Policy, cria `RadarScopeResolver`, remove `establishment_ids` do config e exclui migrations de permissao.</div>
+      </details>
+      <details>
+        <summary>6daadf568 - cache command topology</summary>
+        <div class="detail-body">Mantem os commands, mas documenta auto-discovery no Kernel e deixa claro o limite Labs/Jobs quando o cache nao e compartilhado.</div>
+      </details>
+      <details>
+        <summary>7b1ef8d38 - HTTP concerns in controller</summary>
+        <div class="detail-body">Repository deixa de abortar e de formatar response. Controller resolve Resource e middleware mede endpoints Radar data.</div>
+      </details>
+      <details>
+        <summary>76bf94f54 - map query memory usage</summary>
+        <div class="detail-body">Filtro de coordenadas vai para SQL, `toBase()` evita hidratar milhares de models, e agregados do dashboard ficam mais concentrados.</div>
+      </details>
+      <details>
+        <summary>cd1bd0c3e - Place accessors</summary>
+        <div class="detail-body">Centraliza foto e coordenadas no Model Place e troca URL hardcoded por helper de action/rota existente.</div>
+      </details>
+      <details>
+        <summary>4bda53116 - UI hardening</summary>
+        <div class="detail-body">Corrige dark mode scoped, padroniza `@can`, remove breadcrumb duplicado e adiciona fallback seguro para centro do mapa.</div>
+      </details>
+      <details>
+        <summary>7cc4bb553 / 581e5f93d</summary>
+        <div class="detail-body">Sincroniza branch remota e preserva `CLAUDE.md` como guia local-only via `.gitignore`.</div>
+      </details>
+    </section>
+
+    <section>
+      <div class="head">
+        <h2>Ponto de atenção</h2>
+        <p>Não é um bug crítico: é uma diferença entre o que foi prometido na resposta do PR e o que ainda aparece no código.</p>
+      </div>
+      <div class="grid">
+        <article class="card black span-8">
+          <h3>Atenção: a resposta sobre ES6 ficou ampla demais.</h3>
+          <p>Em um dos comentários, a resposta diz que os `var` foram trocados por `const/let`. Isso é verdade para o store module e para os trechos principais alterados, mas ainda existem `var` em componentes Radar legados. O risco aqui não é funcional; é William ler a resposta como "zeramos todos os var do Radar" e encontrar exemplos restantes.</p>
+        </article>
+        <article class="card orange span-4">
+          <h3>Como blindar</h3>
+          <p>Não vender como bloqueio. A forma mais limpa é ajustar a frase para "store module e trechos alterados" ou fazer um commit pequeno só para padronizar os `var` restantes nos componentes Radar tocados pelo review.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="copy-row">
+        <h2>Comentário curto para o PR</h2>
+        <button type="button" id="copy">Copiar comentário</button>
+      </div>
+      <div class="comment-box" id="comment">William, obrigado pelo review detalhado. Repassei os 24 pontos e deixei cada resposta amarrada a commit/arquivo para facilitar a revalidação.
+
+Resumo do que mudou:
+- Corrigimos os pontos críticos reais: escopo/permissão por perfil, remoção das migrations de permissão, repository sem HTTP, mapa com filtro SQL + `toBase()`, accessors no `Place`, middleware para timing e cleanup de frontend.
+- Sobre o ponto Vue 2 vs Vue 3: aqui a premissa estava invertida. O Radar está em Vue 3 (`createApp`, `vue ^3.2.36`, Vuex 4), então `beforeUnmount` e hooks `mounted/unmounted` de directive estão corretos. Mesmo assim, usei o comentário para endurecer cleanup de observers, timers, body overflow, CancelToken e listeners do mapa.
+- Mantive os commands Radar porque o Kernel auto-descobre `app/Console/Commands`; o ajuste foi documentar claramente a topologia Labs/Jobs e quando o warmup precisa rodar no mesmo cache backend.
+
+Contexto visual conciso da decisão, linha do tempo e pontos críticos:
+https://iskisraell.github.io/radar-operacoes-pr-context/2026-05-25-review/
+
+Ponto de atenção para evitar ruído: em uma das respostas eu falei que os `var` foram trocados por `const/let`. Isso ficou amplo demais. A correção cobriu o store module e os trechos principais alterados, mas ainda existem `var` em componentes Radar legados. Não é um bloqueio funcional nem muda o fix principal; é só uma questão de precisão da resposta. Se você preferir, eu limpo esses `var` restantes em um commit pequeno ou ajusto a frase para não parecer que todos foram removidos.</div>
+    </section>
+
+    <p class="footer">Fonte: Obsidian Operações, PR #876, matriz de respostas e diff pós-review em 2026-05-25/26.</p>
+  </main>
+
+  <script>
+    var button = document.getElementById('copy');
+    var box = document.getElementById('comment');
+
+    button.addEventListener('click', function () {
+      navigator.clipboard.writeText(box.textContent.trim()).then(function () {
+        button.textContent = 'Copiado';
+        setTimeout(function () { button.textContent = 'Copiar comentário'; }, 1600);
+      });
+    });
+  </script>
+</body>
+</html>
