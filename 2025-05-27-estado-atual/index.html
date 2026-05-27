@@ -464,6 +464,75 @@
       font-weight: 700;
     }
 
+    .flow-board {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .flow-lane {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--white);
+    }
+
+    .flow-lane.removed {
+      border-color: var(--red);
+    }
+
+    .flow-lane.added {
+      border-color: var(--green);
+    }
+
+    .flow-lane.kept {
+      border-color: var(--purple);
+    }
+
+    .flow-node {
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--muted);
+    }
+
+    .flow-node strong {
+      display: block;
+      margin-bottom: 4px;
+      line-height: 1.15;
+    }
+
+    .syntax-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .syntax-box {
+      padding: 14px;
+      border-radius: 14px;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: auto;
+    }
+
+    .syntax-box p {
+      color: rgba(255, 255, 255, .76);
+    }
+
+    .syntax-box code {
+      display: block;
+      width: max-content;
+      max-width: 100%;
+      white-space: pre;
+      background: transparent;
+      color: var(--yellow);
+      padding: 0;
+    }
+
     .callout {
       display: flex;
       justify-content: space-between;
@@ -497,7 +566,9 @@
         grid-column: span 12;
       }
 
-      .rail {
+      .rail,
+      .flow-board,
+      .syntax-grid {
         grid-template-columns: 1fr 1fr;
       }
 
@@ -526,7 +597,9 @@
         width: 210px;
       }
 
-      .rail {
+      .rail,
+      .flow-board,
+      .syntax-grid {
         grid-template-columns: 1fr;
       }
 
@@ -558,6 +631,7 @@
 
     <nav class="nav" aria-label="Navegação do artefato">
       <a href="#story">História</a>
+      <a href="#resolver">Resolver</a>
       <a href="#fixes">Correções</a>
       <a href="#examples">Exemplos</a>
       <a href="#commits">Commits</a>
@@ -589,6 +663,71 @@
       </div>
     </section>
 
+    <section id="resolver">
+      <div class="head">
+        <h2>O resolver extra saiu do caminho.</h2>
+        <p>O <code>RadarScopeResolver</code> foi removido porque duplicava a leitura de filtros que o Operações já centraliza em <code>PermissionHelper</code>.</p>
+      </div>
+      <div class="flow-board" aria-label="Fluxo de responsabilidade depois da remoção do RadarScopeResolver">
+        <article class="flow-lane removed">
+          <span class="pill red">removido</span>
+          <h3><code>app/Services/Radar/RadarScopeResolver.php</code></h3>
+          <div class="flow-node">
+            <strong>O que fazia</strong>
+            <p>Reabria filtros de perfil/usuário, aliases e fallback global para responder se o usuário tinha escopo Radar.</p>
+          </div>
+          <div class="flow-node">
+            <strong>Por que saiu</strong>
+            <p>Virou um segundo parser de permissões ao lado do parser real do sistema.</p>
+          </div>
+        </article>
+
+        <article class="flow-lane kept">
+          <span class="pill purple">mantido</span>
+          <h3><code>UserPolicy</code> alias-only</h3>
+          <div class="flow-node">
+            <strong>Sintaxe</strong>
+            <p><code>$user->can('radar-mapa')</code></p>
+          </div>
+          <div class="flow-node">
+            <strong>Serve para</strong>
+            <p>Decidir se pode abrir view/endpoint: equipamentos, dashboard ou mapa.</p>
+          </div>
+        </article>
+
+        <article class="flow-lane added">
+          <span class="pill green">reposicionado</span>
+          <h3><code>RadarRepository</code> + <code>PermissionHelper</code></h3>
+          <div class="flow-node">
+            <strong>Sintaxe</strong>
+            <p><code>PermissionHelper::getByProperty('pontos-menu', 'squares')</code></p>
+          </div>
+          <div class="flow-node">
+            <strong>Serve para</strong>
+            <p>Resolver escopo de dados e aplicar <code>config ∩ pontos-menu ∩ request filters</code>.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="syntax-grid">
+        <article class="syntax-box">
+          <h3>Endpoint autorizado</h3>
+          <p>Policy só responde a pergunta de acesso.</p>
+          <code>@can('radar-mapa')
+  rota /radar/map existe para o usuário
+@endcan</code>
+        </article>
+        <article class="syntax-box">
+          <h3>Dados autorizados</h3>
+          <p>Repository resolve a pergunta de escopo.</p>
+          <code>base Radar config
+∩ pontos-menu via PermissionHelper
+∩ filtros da request
+= payload permitido</code>
+        </article>
+      </div>
+    </section>
+
     <section id="fixes">
       <div class="head">
         <h2>O pacote desde <code>8ce88d9dc</code>.</h2>
@@ -606,7 +745,7 @@
         <div class="grid">
           <div class="card span-7">
             <h3>Escopo voltou para o lugar certo.</h3>
-            <p>O <code>UserPolicy</code> ficou alias-only para permissões Radar. O escopo de dados voltou para <code>RadarRepository</code>, usando os filtros vivos de <code>pontos-menu</code> via helpers já existentes.</p>
+            <p>O <code>RadarScopeResolver</code> foi removido. O <code>UserPolicy</code> ficou alias-only para permissões Radar. O escopo de dados voltou para <code>RadarRepository</code>, usando os filtros vivos de <code>pontos-menu</code> via <code>PermissionHelper</code>.</p>
             <div class="split">
               <div class="compare before">
                 <span class="pill red">antes do hardening</span>
@@ -736,7 +875,7 @@
         </div>
         <div class="commit">
           <code>d9e55cb1a</code>
-          <div><strong>Simplifica escopo e estabiliza viewport</strong><br><small>remove resolver extra, mantém policy alias-only, centraliza scope no repository e ajusta mapa.</small></div>
+          <div><strong>Simplifica escopo e estabiliza viewport</strong><br><small>remove <code>RadarScopeResolver</code>, mantém policy alias-only, centraliza scope no repository e ajusta mapa.</small></div>
           <span class="pill green">scope</span>
         </div>
         <div class="commit">
@@ -846,7 +985,7 @@
       <div class="callout">
         <div>
           <h3>Resumo para decisão</h3>
-          <p>O Radar continua nativo do Operações em Laravel 8 + Blade + Vue 3. A rodada não ampliou autorização; ela tornou as fronteiras mais explícitas e removeu superfícies que podiam induzir deploy inseguro.</p>
+          <p>O Radar continua nativo do Operações em Laravel 8 + Blade + Vue 3. A rodada removeu o resolver duplicado, não ampliou autorização, tornou as fronteiras mais explícitas e removeu superfícies que podiam induzir deploy inseguro.</p>
         </div>
         <span class="pill black">pronto para re-review</span>
       </div>
