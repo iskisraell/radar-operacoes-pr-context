@@ -443,14 +443,14 @@
       color: rgba(255, 255, 255, .78);
     }
 
-    .commit-list {
+    .change-list {
       display: grid;
       gap: 8px;
     }
 
-    .commit {
+    .change-item {
       display: grid;
-      grid-template-columns: 104px 1fr auto;
+      grid-template-columns: 1fr auto;
       gap: 12px;
       align-items: center;
       padding: 12px 14px;
@@ -459,7 +459,7 @@
       background: var(--white);
     }
 
-    .commit small {
+    .change-item small {
       color: var(--text-soft);
       font-weight: 700;
     }
@@ -572,7 +572,7 @@
         grid-template-columns: 1fr 1fr;
       }
 
-      .commit {
+      .change-item {
         grid-template-columns: 1fr;
       }
     }
@@ -618,13 +618,13 @@
       <div>
         <span class="eyebrow">PR #876 - re-review - 27/05/2026</span>
         <h1>Radar saiu de MVP revisado para rota segura de deploy.</h1>
-        <p>Depois do commit do William em <code>8ce88d9dc</code>, a branch fechou os pontos de escopo, cache, mapa, JSON público e frontend map-only. O PR agora aponta para <code>506c20f73</code>.</p>
+        <p>Depois da última intervenção do William, a branch fechou os pontos de escopo, cache, mapa, JSON público e frontend map-only. A página abaixo traduz o que mudou em termos de responsabilidade, fluxo e comportamento esperado.</p>
       </div>
       <div class="hero-bar">
-        <span class="pill orange">8 commits desde William</span>
+        <span class="pill orange">rodada pós-review</span>
         <span class="pill yellow">115 testes Radar</span>
         <span class="pill purple">sem bundles no push final</span>
-        <span class="pill green">head: 506c20f73</span>
+        <span class="pill green">PR atualizado</span>
         <span class="pill red">GitHub ainda marca CHANGES_REQUESTED</span>
       </div>
     </section>
@@ -634,7 +634,7 @@
       <a href="#resolver">Resolver</a>
       <a href="#fixes">Correções</a>
       <a href="#examples">Exemplos</a>
-      <a href="#commits">Commits</a>
+      <a href="#changes">Mudanças</a>
       <a href="#validation">Validação</a>
       <a href="#pr-state">Estado do PR</a>
     </nav>
@@ -730,8 +730,8 @@
 
     <section id="fixes">
       <div class="head">
-        <h2>O pacote desde <code>8ce88d9dc</code>.</h2>
-        <p>Use os botões para ver a história por camada. Cada bloco reflete commits e handoffs conferidos.</p>
+        <h2>O pacote da rodada pós-review.</h2>
+        <p>Use os botões para ver a história por camada. Cada bloco reflete uma decisão técnica conferida contra código e handoffs.</p>
       </div>
 
       <div class="tabs" role="tablist" aria-label="Camadas de correção">
@@ -862,56 +862,51 @@
       </div>
     </section>
 
-    <section id="commits">
+    <section id="changes">
       <div class="head">
-        <h2>Linha do tempo do rework final.</h2>
-        <p>O commit do William abriu a rodada; os commits seguintes ajustaram a direção operacional e fecharam o hardening.</p>
+        <h2>O que entrou, saiu e ficou.</h2>
+        <p>Em vez de ler a rodada por hashes, leia por intenção: cada bloco abaixo descreve a mudança, sua função no sistema e o motivo de existir.</p>
       </div>
-      <div class="commit-list">
-        <div class="commit">
-          <code>8ce88d9dc</code>
-          <div><strong>William: cache de permissões em sessão</strong><br><small>baseline do dia 26; motivou revisão de permissão viva vs sessão/cache.</small></div>
-          <span class="pill black">baseline</span>
+      <div class="change-list">
+        <div class="change-item">
+          <div><strong>Removido: <code>RadarScopeResolver</code></strong><br><small>Ele tentava interpretar filtros de perfil/usuário fora do helper padrão. A lógica voltou para o fluxo já usado pelo Operações.</small></div>
+          <span class="pill red">removido</span>
         </div>
-        <div class="commit">
-          <code>d9e55cb1a</code>
-          <div><strong>Simplifica escopo e estabiliza viewport</strong><br><small>remove <code>RadarScopeResolver</code>, mantém policy alias-only, centraliza scope no repository e ajusta mapa.</small></div>
+        <div class="change-item">
+          <div><strong>Mantido: <code>UserPolicy</code> só para alias de tela</strong><br><small>Serve para responder “pode abrir mapa/dashboard/equipamentos?”. Não decide quais pontos aparecem.</small></div>
+          <span class="pill purple">mantido</span>
+        </div>
+        <div class="change-item">
+          <div><strong>Reposicionado: escopo de dados no <code>RadarRepository</code></strong><br><small>Serve para aplicar <code>config Radar ∩ pontos-menu ∩ filtros da request</code>. É ali que os dados são realmente limitados.</small></div>
           <span class="pill green">scope</span>
         </div>
-        <div class="commit">
-          <code>485718bad</code>
-          <div><strong>Remove superfície Artisan Radar</strong><br><small>elimina clear/warm/health porque cache Jobs não garante cache Labs.</small></div>
+        <div class="change-item">
+          <div><strong>Removido: comandos Artisan Radar</strong><br><small>Evita sugerir warmup/health/clear num servidor que pode não compartilhar o cache visível do Labs.</small></div>
           <span class="pill orange">cache</span>
         </div>
-        <div class="commit">
-          <code>4ca2164da</code>
-          <div><strong>Sequencia primeiro carregamento</strong><br><small>filter options antes de endpoints pesados; evita largada paralela no cold cache.</small></div>
+        <div class="change-item">
+          <div><strong>Adicionado: sequência de primeiro carregamento</strong><br><small>Filter options vêm antes de endpoints pesados. Dashboard só entra no fluxo quando a rota existe para o usuário.</small></div>
           <span class="pill purple">vuex</span>
         </div>
-        <div class="commit">
-          <code>efa9c5848</code>
-          <div><strong>Serve stale durante refresh</strong><br><small>um refresh pesado por vez; demais requests recebem payload stale quando possível.</small></div>
+        <div class="change-item">
+          <div><strong>Adicionado: stale durante refresh pesado</strong><br><small>Um request atualiza; os demais podem receber o último payload disponível, reduzindo espera e pressão no banco.</small></div>
           <span class="pill green">stale</span>
         </div>
-        <div class="commit">
-          <code>be5fe8704</code>
-          <div><strong>Enquadra escopo amplo no frontend</strong><br><small>mapa com muitos pontos mantém leitura visual sem mudar autorização.</small></div>
+        <div class="change-item">
+          <div><strong>Adicionado: enquadramento visual para escopo amplo</strong><br><small>O mapa fica legível em recortes nacionais/amplos sem alterar o escopo autorizado.</small></div>
           <span class="pill pink">map</span>
         </div>
-        <div class="commit">
-          <code>8ba015b4c</code>
-          <div><strong>Bloqueia fallback de escopo vivo vazio</strong><br><small>sem <code>pontos-menu</code>, dados vazios; não SP.</small></div>
+        <div class="change-item">
+          <div><strong>Bloqueado: fallback para SP sem escopo vivo</strong><br><small>Se o usuário tem Radar mas não tem <code>pontos-menu</code>, endpoint autorizado retorna vazio. Não inventa concessão.</small></div>
           <span class="pill red">security</span>
         </div>
-        <div class="commit">
-          <code>48bc48336</code>
-          <div><strong>Map-only não chama dashboard</strong><br><small>Blade passa somente rotas autorizadas; dashboard 403 permanece.</small></div>
+        <div class="change-item">
+          <div><strong>Corrigido: map-only não chama dashboard</strong><br><small>O Blade entrega ao Vue apenas rotas permitidas. O backend segue respondendo 403 para dashboard sem permissão.</small></div>
           <span class="pill purple">frontend</span>
         </div>
-        <div class="commit">
-          <code>506c20f73</code>
-          <div><strong>Oculta IDs internos do dashboard</strong><br><small>cache/query preservados; response público sanitizado.</small></div>
-          <span class="pill black">head</span>
+        <div class="change-item">
+          <div><strong>Sanitizado: JSON público do dashboard</strong><br><small>IDs internos continuam no cache/query context privado, mas não aparecem em <code>filters.scope</code> para o frontend.</small></div>
+          <span class="pill black">api</span>
         </div>
       </div>
     </section>
@@ -948,14 +943,14 @@
     <section id="pr-state">
       <div class="head">
         <h2>Estado conferido no PR.</h2>
-        <p>Checagem feita depois do push dos commits finais para <code>feature/radar-operacoes-mvp</code>.</p>
+        <p>Checagem feita depois de publicar a rodada final na branch do PR.</p>
       </div>
       <div class="grid">
         <article class="card black span-5">
           <h3>GitHub</h3>
           <p>PR: <a href="https://github.com/eletromidia/operacoes/pull/876">eletromidia/operacoes#876</a></p>
           <p>Estado: aberto, review decision ainda <code>CHANGES_REQUESTED</code> até novo review.</p>
-          <p>Head remoto observado: <code>506c20f73</code>.</p>
+          <p>A branch do PR já inclui a rodada descrita neste artefato.</p>
         </article>
         <article class="card span-7">
           <h3>O que pedir no re-review</h3>
@@ -993,7 +988,7 @@
 
     <footer>
       <strong>Radar Operações - artefato de re-review do PR #876</strong>
-      <p>Fonte: commits locais/remotos, GitHub PR #876, handoffs Obsidian, validação Sail e build Mix em 27/05/2026. Página publicada em <code>/radar-operacoes-pr-context/2025-05-27-estado-atual/</code>.</p>
+      <p>Fonte: GitHub PR #876, handoffs Obsidian, validação Sail e build Mix em 27/05/2026. Página publicada em <code>/radar-operacoes-pr-context/2025-05-27-estado-atual/</code>.</p>
     </footer>
   </main>
 
