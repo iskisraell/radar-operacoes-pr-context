@@ -665,7 +665,7 @@
         <span class="pill orange">rodada pós-review</span>
         <span class="pill yellow">115 testes Radar</span>
         <span class="pill purple">sem bundles no push final</span>
-        <span class="pill green">PR atualizado</span>
+        <span class="pill green">simplificação validada</span>
         <span class="pill red">GitHub ainda marca CHANGES_REQUESTED</span>
       </div>
     </section>
@@ -676,6 +676,7 @@
       <a href="#fixes">Correções</a>
       <a href="#examples">Exemplos</a>
       <a href="#changes">Mudanças</a>
+      <a href="#simplification">Simplificação</a>
       <a href="#validation">Validação</a>
       <a href="#pr-state">Estado do PR</a>
     </nav>
@@ -949,13 +950,82 @@
           <div><strong>Sanitizado: JSON público do dashboard</strong><br><small>IDs internos continuam no cache/query context privado, mas não aparecem em <code>filters.scope</code> para o frontend.</small></div>
           <span class="pill black">api</span>
         </div>
+        <div class="change-item">
+          <div><strong>Removido: modo <code>scope.resolver</code> e <code>static</code></strong><br><small>O <code>RadarScopeResolver</code> já tinha saído. O follow-up removeu a chave <code>radar.scope.resolver</code> do config, os branches <code>permission_based</code>/<code>static</code> no repository e os helpers de teste <code>useStaticConcession</code>.</small></div>
+          <span class="pill red">removido</span>
+        </div>
+        <div class="change-item">
+          <div><strong>Extraído: <code>RadarSelect2</code> local</strong><br><small>Select2 plugin lifecycle saiu do <code>RadarFilterBar.vue</code> e foi encapsulado em <code>RadarSelect2.vue</code>. O componente compartilhado <code>Select2.vue</code> não foi alterado.</small></div>
+          <span class="pill green">refactor</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="simplification">
+      <div class="head">
+        <h2>Follow-up: modo estático saiu, Select2 virou componente.</h2>
+        <p>Depois da rodada de hardening, dois pontos pendentes foram fechados: o modo <code>scope.resolver</code>/<code>static</code> residual e a duplicação de lógica Select2 no FilterBar.</p>
+      </div>
+      <div class="grid">
+        <div class="card span-6">
+          <h3>Modo <code>static</code> não existia mais em prática.</h3>
+          <p>O <code>RadarScopeResolver</code> já tinha sido removido, mas o config ainda tinha a chave <code>scope.resolver</code>, o repository ainda tinha branches <code>permission_based</code>/<code>static</code>, e testes ainda usavam <code>useStaticConcession()</code> para simular concessões fixas.</p>
+          <p>A simplificação removeu tudo:</p>
+          <ul class="checklist">
+            <li><code>config/radar.php</code>: chave <code>scope.resolver</code> removida.</li>
+            <li><code>RadarRepository</code>: branches de modo resolver eliminados; <code>pontos-menu</code> via <code>PermissionHelper</code> é o único caminho.</li>
+            <li>Testes: <code>useStaticConcession</code> e <code>useStaticConcessionWithoutFlushingCache</code> substituídos por fixtures autenticados com escopo vivo.</li>
+            <li>Middleware: <code>scope_resolver</code> removido do log de endpoints lentos.</li>
+          </ul>
+          <div class="syntax-grid">
+            <article class="syntax-box">
+              <h3>Depois</h3>
+              <p>Um único modelo de escopo.</p>
+              <code>alias radar-* → view/endpoint
+pontos-menu vivo → dados visíveis
+sem pontos-menu → payload vazio</code>
+            </article>
+            <article class="syntax-box">
+              <h3>Zero referências</h3>
+              <p><code>rg</code> confirma ausência total.</p>
+              <code>radar.scope.resolver     → 0 matches
+scope_resolver           → 0 matches
+useStaticConcession      → 0 matches
+Config::set(resolver)    → 0 matches</code>
+            </article>
+          </div>
+        </div>
+        <div class="card span-6">
+          <h3>Select2 saiu do FilterBar e virou componente.</h3>
+          <p>O <code>RadarFilterBar.vue</code> tinha importação direta de jQuery/Select2, inicialização, destruição, sync de valores, sync de disabled, controle de pending multi-select e reopen — tudo inline.</p>
+          <p>A extração criou <code>RadarSelect2.vue</code>:</p>
+          <ul class="checklist">
+            <li><strong>Props</strong>: <code>modelValue</code>, <code>options</code>, <code>multiple</code>, <code>placeholder</code>, <code>disabled</code>, <code>staticSearch</code>, <code>applyOnClose</code>.</li>
+            <li><strong>Emits</strong>: <code>update:modelValue</code>, <code>change</code> (single imediato, multi no close).</li>
+            <li><strong>Lifecycle</strong>: Vue 3 (<code>mounted</code>/<code>beforeUnmount</code>, não <code>destroyed</code>).</li>
+            <li><strong>Namespacing</strong>: eventos jQuery namespaced <code>.radar</code> para não conflitar.</li>
+          </ul>
+          <p>O <code>RadarFilterBar.vue</code> agora importa <code>RadarSelect2</code> e foca em lógica de domínio: debounce de busca, contagem de filtros ativos, clear all e emissão de <code>filters-changed</code>.</p>
+          <div class="split" style="margin-top: 12px">
+            <div class="compare before">
+              <span class="pill red">antes</span>
+              <h3>FilterBar inline</h3>
+              <p>jQuery + Select2 import + init/destroy/sync + pending keys.</p>
+            </div>
+            <div class="compare after">
+              <span class="pill green">agora</span>
+              <h3>FilterBar + RadarSelect2</h3>
+              <p>FilterBar foca em domínio. RadarSelect2 encapsula plugin.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <section id="validation">
       <div class="head">
         <h2>Validação final executada.</h2>
-        <p>Build feito para teste local. Bundles gerados foram restaurados e não entraram no push final.</p>
+        <p>Análise estática e inspeção de diff confirmadas. Sail não estava disponível nesta rodada; resultados Sail são da execução anterior.</p>
       </div>
       <div class="grid">
         <article class="card green span-3">
@@ -966,17 +1036,34 @@
         <article class="card green span-3">
           <h3>Suite Radar</h3>
           <p><code>./sail php vendor/bin/phpunit tests/Feature/Radar/</code></p>
-          <p>OK. 115 tests, 5612 assertions.</p>
+          <p>OK. 115 tests, 5612 assertions (Sail anterior).</p>
         </article>
         <article class="card green span-3">
           <h3>Frontend</h3>
           <p><code>./sail npm run development</code></p>
-          <p>OK. Laravel Mix compilou <code>/js/app.js</code> e <code>css/app.css</code>.</p>
+          <p>OK (Sail anterior). Bundles não foram incluídos nos commits de simplificação.</p>
         </article>
         <article class="card green span-3">
           <h3>Diff</h3>
           <p><code>git diff --check</code></p>
-          <p>OK depois de restaurar bundles públicos gerados.</p>
+          <p>Clean em source files. Warnings só em bundles gerados.</p>
+        </article>
+      </div>
+      <div class="grid" style="margin-top: 12px">
+        <article class="card green span-4">
+          <h3>Resolver/static zero</h3>
+          <p><code>rg</code> em <code>config/</code>, <code>app/</code>, <code>tests/</code></p>
+          <p>0 matches para <code>radar.scope.resolver</code>, <code>useStaticConcession</code>, <code>scope_resolver</code>.</p>
+        </article>
+        <article class="card green span-4">
+          <h3>Select2 limpo no FilterBar</h3>
+          <p><code>rg</code> em <code>RadarFilterBar.vue</code></p>
+          <p>0 matches para import jQuery, import select2, init/destroy/sync helpers.</p>
+        </article>
+        <article class="card green span-4">
+          <h3>Commits limpos</h3>
+          <p>2 commits de simplificação</p>
+          <p>Sem bundles públicos. Sem arquivos não relacionados. <code>RadarSelect2.vue</code> usa Vue 3 lifecycle.</p>
         </article>
       </div>
     </section>
@@ -1021,7 +1108,7 @@
       <div class="callout">
         <div>
           <h3>Resumo para decisão</h3>
-          <p>O Radar continua nativo do Operações em Laravel 8 + Blade + Vue 3. A rodada removeu o resolver duplicado, não ampliou autorização, tornou as fronteiras mais explícitas e removeu superfícies que podiam induzir deploy inseguro.</p>
+          <p>O Radar continua nativo do Operações em Laravel 8 + Blade + Vue 3. A rodada removeu o resolver duplicado, o modo estático residual e a duplicação de Select2 no FilterBar. Não ampliou autorização, tornou as fronteiras mais explícitas e removeu superfícies que podiam induzir deploy inseguro.</p>
         </div>
         <span class="pill black">pronto para re-review</span>
       </div>
